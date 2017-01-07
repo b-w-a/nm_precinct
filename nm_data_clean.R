@@ -289,6 +289,8 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 31	McKinley County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_mckinley_raw.csv")
 county <- dataCleanR(county, '031')
+head(county)
+
 county$prec <- gsub("A|B|C","",county$prec)
 county$prec <- sprintf("%03s",county$prec)
 
@@ -351,6 +353,7 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_sandoval_raw.csv")
 county <- dataCleanR(county, '043')
 head(county)
+county$prec <- seq(1,85,1)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_sandoval_final.csv")
 
 # 45	San Juan County
