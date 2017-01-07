@@ -110,6 +110,8 @@ write_csv(data,"/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm
 
 foo <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_precinct_with_pct_latino.csv")
 
+
+foo %>% filter(county == "003")
 # now the demographcis
 # 1	Bernalillo County
 # 3	Catron County
@@ -155,6 +157,15 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 3	Catron County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_catron_raw.csv")
 county <- dataCleanR(county, '003')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "003")
+
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_catron_final.csv")
 
@@ -167,12 +178,30 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 6	Cibola County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_cibola_raw.csv")
 county <- dataCleanR(county, '006')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "006")
+
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_cibola_final.csv")
 
 # 7	Colfax County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_colfax_raw.csv")
 county <- dataCleanR(county, '007')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "007")
+
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_colfax_final.csv")
 
@@ -227,6 +256,15 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 25	Lea County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_lea_raw.csv")
 county <- dataCleanR(county, '025')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "025")
+
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_lea_final.csv")
 
@@ -251,6 +289,15 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 31	McKinley County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_mckinley_raw.csv")
 county <- dataCleanR(county, '031')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "031")
+
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_mckinley_final.csv")
 
@@ -263,6 +310,14 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 35	Otero County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_otero_raw.csv")
 county <- dataCleanR(county, '035')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "035")
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_otero_final.csv")
 
@@ -281,6 +336,14 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 41	Roosevelt County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_roosevelt_raw.csv")
 county <- dataCleanR(county, '041')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "041")
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_roosevelt_final.csv")
 
@@ -299,6 +362,14 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 47	San Miguel County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_san_miguel_raw.csv")
 county <- dataCleanR(county, '047')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "047")
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_san_miguel_final.csv")
 
@@ -311,6 +382,14 @@ write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico
 # 51	Sierra County
 county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_sierra_raw.csv")
 county <- dataCleanR(county, '051')
+county$prec <- gsub("A|B|C","",county$prec)
+county$prec <- sprintf("%03s",county$prec)
+
+county <- county %>% group_by(prec) %>% summarise(
+  obama_votes = sum(obama), 
+  romney_votes = sum(romney), 
+  total = sum(total_votes)) %>% dplyr::select(prec, obama = obama_votes, romney = romney_votes, total_votes = total) %>% 
+  mutate(county = "051")
 head(county)
 write_csv(county, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_sierra_final.csv")
 
@@ -355,7 +434,18 @@ myfiles = lapply(temp, read_csv)
 res_2012 <- do.call(rbind, myfiles)
 head(res_2012)
 
+res_2012$prec <- sprintf("%03s",res_2012$prec) 
 
+
+
+res_2012 <- res_2012 %>% mutate(county_prec = paste(county, prec, sep = "_"),
+                                pct_obama = obama / total_votes, 
+                                pct_romney = romney / total_votes) %>% 
+  dplyr::select(county_prec, pct_obama, pct_romney, obama, romney)
+
+head(res_2012)
+
+write_csv(res_2012, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_vote_returns_final.csv")
 
 
 
