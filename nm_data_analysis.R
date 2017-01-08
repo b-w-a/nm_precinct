@@ -87,3 +87,63 @@ pvalue_exit <- mean(df_beta$beta < .54, na.rm = T)
 
 mean(df_beta$beta < ei_est, na.rm = T)
 
+# 2012 and 2016 -------
+# read and merge data
+data_16 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_precinct_with_pct_latino.csv")
+
+data_12 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_vote_returns_final.csv")
+
+data <- inner_join(data_16, data_12, by = "county_prec")
+
+# weighted votes 
+df <- gather(data,candidate, pct_vote ,c(pct_clinton, pct_trump, pct_obama, pct_romney))
+
+weighted <- ggplot(df, aes(x=pct_latino, y = pct_vote, color = candidate, weight = total_votes, size = total_votes)) + geom_point(alpha = .10) + 
+  scale_color_manual(values = c('blue', 'turquoise', 'darkred', 'red'), 
+                     breaks = c('pct_clinton', 'pct_obama', 'pct_romney', 'pct_trump'),
+                     labels = c('Clinton', 'Obama','Romney', 'Trump'), 
+                     name = "Candidate") + 
+  stat_smooth(se = F) + 
+  theme_bw() + scale_y_continuous(limits=c(0,1), breaks = c(seq(0,1,.1))) + 
+  labs(title = "New Mexico Presidential Vote: Official Precinct-Level Election Returns", 
+       x = "Percent Latino Registered Voter in Precinct", y = "2016 Presidental Vote Share") + 
+  guides(size=F)
+
+ggsave("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/all_candidates.png", weighted, height = 8, width = 8)
+
+# net difference votes 
+df <- data %>% dplyr::select(county_prec, obama , romney, clinton ,trump,pct_latino)
+df <- df %>% mutate(clinton_margin = clinton - obama, 
+                    direction = ifelse(clinton_margin > 0, "Clinton Improves", "Clinton Worsens"))
+
+
+plot <- ggplot(df, aes(x=pct_latino, y = clinton_margin, color = direction)) + geom_point(alpha = .25) + 
+  scale_color_manual(values = c('blue', 'red'), name = "Direction") + 
+  theme_bw() + labs(title = "2016 New Mexico Latino Vote", 
+                    y = "Net Clinton Difference \n (Clinton 16 - Obama 12)", 
+                    x = "Percent Latino Registered \n Voters in Precinct") + 
+  geom_hline(yintercept = 0, lty =2 ) + 
+  scale_y_continuous(limits=c(-250,250))
+
+ggsave("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/net_diff.png", plot, height = 8, width = 8)
+
+# 2012 EI 
+
+df <- data %>% mutate(tot_votes_12 = obama + romney) %>% dplyr::select(pct_obama, pct_romney, tot_votes_12, pct_latino) %>% na.omit()
+
+
+nm_2012 <- df %>%  mutate(pct_other = 1 - (pct_obama + pct_romney),pct_nonlatino = 1-pct_latino)
+
+head(nm_2012)
+
+cands <- c("pct_obama", "pct_romney", "pct_other")
+groups <- c("~ pct_latino", "~ pct_nonlatino") 
+table_names <- c("EI: Pct Latino", "EI: Pct Non Latino")
+
+results_nm_2012 <- ei_est_gen(cands, groups,
+                              "tot_votes_12", data = nm_2012, 
+                              table_names = table_names)
+
+
+write_csv(results_nm_2012,"/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_ei_estimates.csv")
+
