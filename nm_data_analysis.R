@@ -78,7 +78,7 @@ plot <- ggplot(df_beta, aes(x=beta)) + geom_density() +
   geom_vline(xintercept = .54, col = "red", lty = 2) + theme_bw() +
   geom_vline(xintercept = ei_est, lty = 2) + 
   annotate("text", x = .4, y = 7.5, label = "Exit Poll \n Estimate = .54", size = 3) +
-  annotate("text", x = .8, y = 8.5, label = "EI Estimate\n = .69", size = 3) + 
+  annotate("text", x = .8, y = 8.5, label = "EI Estimate\n = .68", size = 3) + 
   labs(x = "Estimated Latino Vote for Clinton", y = "Density", title = "New Mexico Presidential Latino Vote") 
 
 ggsave("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_density.png", plot, height = 8, width = 8)
