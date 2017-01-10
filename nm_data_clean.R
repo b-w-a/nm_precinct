@@ -82,6 +82,7 @@ df <- df %>% mutate(total_votes = johnson + castle + trump + clinton + stein + r
 
 write_csv(df, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_vote_returns.csv")
 
+# voter reg
 setwd("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/nm")
 temp = list.files(pattern="*.csv")
 myfiles = lapply(temp, read_csv)
@@ -99,6 +100,8 @@ dem[is.na(dem)] <- 0
 # percent latino 
 dem <- dem %>% mutate(total_reg = as.numeric(asian) + black + white + latino + as.numeric(native) + other, 
                       pct_latino = latino / total_reg) %>% dplyr::select(county_prec, pct_latino)
+
+
 
 # merge the data ----
 
@@ -450,110 +453,153 @@ head(res_2012)
 
 write_csv(res_2012, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_vote_returns_final.csv")
 
+# total number of reg voters ------
+# voter reg
+setwd("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/nm")
+temp = list.files(pattern="*.csv")
+myfiles = lapply(temp, read_csv)
+
+dem <- do.call(rbind, myfiles)
+
+dem$county <- sprintf("%03s",dem$county) 
+dem$precinct <- sprintf("%03s",dem$precinct) 
+dem <- dem %>% mutate(county_prec = paste(county, precinct, sep = "_"))
+head(dem)
+
+# NAs to zero 
+dem[is.na(dem)] <- 0
+
+# percent latino 
+dem <- dem %>% mutate(total_reg = as.numeric(asian) + black + white + latino + as.numeric(native) + other) %>% dplyr::select(county_prec, total_reg)
+
+write_csv(dem, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_total_reg.csv")
+
+# 2012 voter reg ------
+df <- read.csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_reg_precinct_level.csv", header = T, stringsAsFactors = F)
 
 
+df$county <- tolower(df$county)
+df$county <- gsub(" ","_", df$county)
+
+# county fips 
+fips <- read.csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/nm_county.csv", header = T, stringsAsFactors = F)
+fips$fips <- sprintf("%03d",fips$fips)
+fips$county <- tolower(fips$county)
+fips$county <- gsub(" county","", fips$county)
+fips$county <- gsub(" ","_", fips$county)
+
+df <- left_join(df, fips, by = "county")
 
 
+head(df)
+
+df$precinct <- sprintf("%03d",df$precinct)
 
 
+df <- df %>% mutate(county_prec = paste(fips, precinct, sep = "_")) %>% group_by(county_prec) %>% summarise(
+  total_reg = sum(reg_voters)) 
 
-bern <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/bern.csv")
-
-head(bern)
-colnames(bern) <- c('county', 'precinct', 'office', 'candidate', 'total_votes')
-
-bern <- bern[,c('precinct','candidate', 'total_votes')]
-drop <- which(is.na(bern$total_votes))
-
-bern <- bern[-drop,]
-bern$row <- 1:nrow(bern)
-str(bern)
-
-length(unique(bern$candidate))
-
-bern$candidate <- as.factor(bern$candidate)
-
-test <- spread(bern, candidate, total_votes) %>% arrange(row)
-colnames(test) <- c('precinct', 'row', 'obama', 'johnson', 'stein', 'romney', 'rocky', 'goode')
-head(test)
-
-unique(test$precinct)
-
-precinct <- rep(1:603, each = 6)
-
-test$precinct
-i <- 48
-
-bin <- vector('list', length = length(unique(test$precinct)))
-
-precinct <- unique(test$precinct) %>% na.omit()
-
-for(i in 1:length(precinct)){
-  bin[[i]] <- rep(unique(precinct)[i], each = 6)
-}
-
-res <- do.call(c, bin)
-
-final <- data.frame(prec = res, test)
-head(final)
-final[is.na(final)] <- 0
-
-foo <- final %>% group_by(prec) %>% summarise(
-  obama = sum(obama), 
-  romney = sum(romney), 
-  total_votes = sum(obama, romney, stein, johnson, goode, rocky)) %>% dplyr::select(prec, obama, romney, total_votes)
-
-head(foo)
-
-write_csv(foo, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_bern_final.csv")
-
-# 3	Catron County
-county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_catron_raw.csv")
-head(data)
+head(df)
 
 
-colnames(county) <- c('county', 'precinct', 'office', 'candidate', 'total_votes')
-
-county <- county[,c('precinct','candidate', 'total_votes')]
-drop <- which(is.na(county$total_votes))
-
-county <- county[-drop,]
-county$row <- 1:nrow(county)
-head(county)
-
-length(unique(county$candidate))
-
-county$candidate <- as.factor(county$candidate)
-
-county_long <- spread(county, candidate, total_votes) %>% arrange(row)
-colnames(county_long) <- c('precinct', 'row', 'obama', 'johnson', 'stein', 'romney', 'rocky', 'goode')
-head(county_long)
-
-bin <- vector('list', length = length(unique(county_long$precinct)))
-
-precinct <- unique(county_long$precinct) %>% na.omit()
-
-for(i in 1:length(precinct)){
-  bin[[i]] <- rep(unique(precinct)[i], each = 6)
-}
-
-res <- do.call(c, bin)
-
-final <- data.frame(prec = res, county_long)
-head(final)
-final[is.na(final)] <- 0
-
-foo <- final %>% group_by(prec) %>% summarise(
-  obama = sum(obama), 
-  romney = sum(romney), 
-  total_votes = sum(obama, romney, stein, johnson, goode, rocky)) %>% dplyr::select(prec, obama, romney, total_votes)
-
-head(foo)
-
-
-test <- dataCleanR(county)
-
-head(test)
+                    
+# bern <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/bern.csv")
+# 
+# head(bern)
+# colnames(bern) <- c('county', 'precinct', 'office', 'candidate', 'total_votes')
+# 
+# bern <- bern[,c('precinct','candidate', 'total_votes')]
+# drop <- which(is.na(bern$total_votes))
+# 
+# bern <- bern[-drop,]
+# bern$row <- 1:nrow(bern)
+# str(bern)
+# 
+# length(unique(bern$candidate))
+# 
+# bern$candidate <- as.factor(bern$candidate)
+# 
+# test <- spread(bern, candidate, total_votes) %>% arrange(row)
+# colnames(test) <- c('precinct', 'row', 'obama', 'johnson', 'stein', 'romney', 'rocky', 'goode')
+# head(test)
+# 
+# unique(test$precinct)
+# 
+# precinct <- rep(1:603, each = 6)
+# 
+# test$precinct
+# i <- 48
+# 
+# bin <- vector('list', length = length(unique(test$precinct)))
+# 
+# precinct <- unique(test$precinct) %>% na.omit()
+# 
+# for(i in 1:length(precinct)){
+#   bin[[i]] <- rep(unique(precinct)[i], each = 6)
+# }
+# 
+# res <- do.call(c, bin)
+# 
+# final <- data.frame(prec = res, test)
+# head(final)
+# final[is.na(final)] <- 0
+# 
+# foo <- final %>% group_by(prec) %>% summarise(
+#   obama = sum(obama), 
+#   romney = sum(romney), 
+#   total_votes = sum(obama, romney, stein, johnson, goode, rocky)) %>% dplyr::select(prec, obama, romney, total_votes)
+# 
+# head(foo)
+# 
+# write_csv(foo, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_bern_final.csv")
+# 
+# # 3	Catron County
+# county <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012/2012_catron_raw.csv")
+# head(data)
+# 
+# 
+# colnames(county) <- c('county', 'precinct', 'office', 'candidate', 'total_votes')
+# 
+# county <- county[,c('precinct','candidate', 'total_votes')]
+# drop <- which(is.na(county$total_votes))
+# 
+# county <- county[-drop,]
+# county$row <- 1:nrow(county)
+# head(county)
+# 
+# length(unique(county$candidate))
+# 
+# county$candidate <- as.factor(county$candidate)
+# 
+# county_long <- spread(county, candidate, total_votes) %>% arrange(row)
+# colnames(county_long) <- c('precinct', 'row', 'obama', 'johnson', 'stein', 'romney', 'rocky', 'goode')
+# head(county_long)
+# 
+# bin <- vector('list', length = length(unique(county_long$precinct)))
+# 
+# precinct <- unique(county_long$precinct) %>% na.omit()
+# 
+# for(i in 1:length(precinct)){
+#   bin[[i]] <- rep(unique(precinct)[i], each = 6)
+# }
+# 
+# res <- do.call(c, bin)
+# 
+# final <- data.frame(prec = res, county_long)
+# head(final)
+# final[is.na(final)] <- 0
+# 
+# foo <- final %>% group_by(prec) %>% summarise(
+#   obama = sum(obama), 
+#   romney = sum(romney), 
+#   total_votes = sum(obama, romney, stein, johnson, goode, rocky)) %>% dplyr::select(prec, obama, romney, total_votes)
+# 
+# head(foo)
+# 
+# 
+# test <- dataCleanR(county)
+# 
+# head(test)
 # 5	Chaves County
 # 6	Cibola County
 # 7	Colfax County

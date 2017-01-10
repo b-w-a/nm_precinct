@@ -147,3 +147,28 @@ results_nm_2012 <- ei_est_gen(cands, groups,
 
 write_csv(results_nm_2012,"/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_ei_estimates.csv")
 
+
+# turnout study -----
+
+data_16 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_precinct_with_pct_latino.csv")
+data_12 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_vote_returns_final.csv")
+data <- inner_join(data_16, data_12, by = "county_prec")
+
+reg_voters <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_total_reg.csv")
+
+data <- inner_join(data, reg_voters, by = "county_prec")
+# raw votes each year 
+
+# votes over reg voters
+data <- data %>% mutate(turnout_2016 = (clinton + trump) / total_reg, 
+                        turnout_2102 = (obama + romney) / total_reg, 
+                        turnout_diff = turnout_2016 - turnout_2102)
+
+hist(data$turnout_diff)
+
+
+
+
+
+
+
