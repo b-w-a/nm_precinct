@@ -154,17 +154,34 @@ data_16 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexi
 data_12 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_vote_returns_final.csv")
 data <- inner_join(data_16, data_12, by = "county_prec")
 
-reg_voters <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_total_reg.csv")
+# 2016 reg voters
+reg_16 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2016_total_reg.csv")
+data <- inner_join(data, reg_16, by = "county_prec")
 
-data <- inner_join(data, reg_voters, by = "county_prec")
+
+# 2012 reg voters 
+reg_12 <- read_csv("/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_reg_final.csv")
+
+
+
+
 # raw votes each year 
+
+data <- left_join(data, reg_12, by ="county_prec" )
+
+head(data)
 
 # votes over reg voters
 data <- data %>% mutate(turnout_2016 = (clinton + trump) / total_reg, 
-                        turnout_2102 = (obama + romney) / total_reg, 
-                        turnout_diff = turnout_2016 - turnout_2102)
+                        turnout_2012 = (obama + romney) / reg_12, 
+                        turnout_diff = turnout_2016 - turnout_2012,
+                        direction = ifelse(turnout_diff > 0,"2016 better","2012 better"))
 
-hist(data$turnout_diff)
+head(data)
+
+ggplot(data, aes(x=turnout_diff, color = direction)) + geom_histogram(binwidth = .01, alpha = .25) + theme_bw() + 
+  scale_x_continuous(limits = c(-.5,.5))
+  
 
 
 

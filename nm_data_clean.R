@@ -497,9 +497,11 @@ df$precinct <- sprintf("%03d",df$precinct)
 
 
 df <- df %>% mutate(county_prec = paste(fips, precinct, sep = "_")) %>% group_by(county_prec) %>% summarise(
-  total_reg = sum(reg_voters)) 
+  reg_12 = sum(reg_voters)) 
 
-head(df)
+
+write_csv(df, "/Users/bryanwilcox/Dropbox/2016 Voter Turnout/data/new_mexico/nm_precinct/2012_reg_final.csv")
+
 
 
                     
